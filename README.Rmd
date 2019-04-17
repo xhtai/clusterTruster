@@ -43,6 +43,7 @@ The package also contains an example data set, called `removedDups`. This analyz
 NBIDEminimax <- getMetrics(removedDups, pairColNums = 1:2, matchColNum = "match", distSimCol = "corrMax", linkage = "minimax", dist = FALSE) 
 ```
 
+### Plots
 This is some example code for generating plots, assuming that metrics have been generated using each linkage method and stored in a data frame with their corresponding names.
 
 ```{r, eval = FALSE}
