@@ -13,13 +13,13 @@
 #'   next three parameters.
 #' @param distSimCol name of column in `allPairwise` indicating distances or
 #'   similarities, input as character, e.g. "l2dist". If this is a similarity
-#'   and not a difference, input `dist` parameter to be FALSE. If a similarity
+#'   and not a difference, input `myDist` parameter to be FALSE. If a similarity
 #'   measure is used, distance will be calcualted as 1 - similarity.
 #' @param linkCol name of column in `allPairwise` with links, input as
 #'   character, e.g. "minimax0.4"
 #' @param pairColNums vector of length 2 indicating the column numbers in
 #'   `allPairwise` of 1. item 1 in comparison, 2. item 2 in comparison
-#' @param dist is `distSimCol` a distance or similarity measure? Default TRUE,
+#' @param myDist is `distSimCol` a distance or similarity measure? Default TRUE,
 #'   i.e. distance measure
 #'
 #' @return data frame with columns `cluster`, `minimaxRadius`, `prototype`. The
@@ -30,20 +30,20 @@
 #' @importFrom dplyr group_by summarize
 #' @export
 
-distToPrototype <- function(allPairwise, distSimCol, linkCol, pairColNums, dist = TRUE) {
+distToPrototype <- function(allPairwise, distSimCol, linkCol, pairColNums, myDist = TRUE) {
     myClusts <- getClust(allPairwise, linkCol, pairColNums)
 
     myClusts$maxRadius <- NA # maximum radius if this item is the prototype of its cluster
-    for (i in 1:nrow(myClusts)) { # if item i is the prototype
-      tmp <- allPairwise[allPairwise[, linkCol] == 1 & (allPairwise[, pairColNums[1]] == myClusts$item[i] | allPairwise[, pairColNums[2]] == myClusts$item[i]), distSimCol]
+    for (j in 1:nrow(myClusts)) { # if item i is the prototype
+      tmp <- allPairwise[allPairwise[, linkCol] == 1 & (allPairwise[, pairColNums[1]] == myClusts$item[j] | allPairwise[, pairColNums[2]] == myClusts$item[j]), distSimCol]
 
-      if (length(tmp) > 0) { # if item[i] is in a cluster
-        if (dist == FALSE) {
+      if (length(tmp) > 0) { # if item[j] is in a cluster
+        if (myDist == FALSE) {
           tmp <- 1 - tmp
         }
-        myClusts$maxRadius[i] <- max(tmp)
-      } else { # if item[i] is a singleton
-        myClusts$maxRadius[i] <- 0
+        myClusts$maxRadius[j] <- max(tmp)
+      } else { # if item[j] is a singleton
+        myClusts$maxRadius[j] <- 0
       }
     }
 
@@ -74,7 +74,7 @@ distToPrototype <- function(allPairwise, distSimCol, linkCol, pairColNums, dist 
 #' @export
 
 getClust <- function(allPairwise, linkCol, pairColNums) {
-    distMat <- longToSquare(allPairwise, pairColNums, linkCol, dist = FALSE) # here dist is for linkCol
+    distMat <- longToSquare(allPairwise, pairColNums, linkCol, myDist = FALSE) # here dist is for linkCol
     distObj <- as.dist(distMat)
 
     hcluster <- hclust(distObj, method = "single") # doesn't matter because everything is already linked properly
@@ -83,9 +83,9 @@ getClust <- function(allPairwise, linkCol, pairColNums) {
 
     hashes <- unique(c(allPairwise[, pairColNums[1]], allPairwise[, pairColNums[2]]))
     hashes <- sort(hashes)
-    names(clustersAll) <- hashes
+    # names(clustersAll) <- hashes
 
-    outClusters <- data.frame(item = names(clustersAll), cluster = clustersAll, stringsAsFactors = FALSE)
+    outClusters <- data.frame(item = hashes, cluster = clustersAll, stringsAsFactors = FALSE)
     rownames(outClusters) <- NULL
 
     return(outClusters)

@@ -9,17 +9,17 @@
 #'   `allPairwise` of 1. item 1 in comparison, 2. item 2 in comparison
 #' @param distSimCol name of column in `allPairwise` indicating distances or
 #'   similarities, input as character, e.g. "l2dist". If this is a similarity
-#'   and not a difference, input `dist` parameter to be FALSE
+#'   and not a difference, input `myDist` parameter to be FALSE
 #' @param linkage one of "single", "complete", "average", "centroid", "minimax"
-#' @param dist is `distSimCol` a distance or similarity measure? Default TRUE,
+#' @param myDist is `distSimCol` a distance or similarity measure? Default TRUE,
 #'   i.e. distance measure
 #'
 #' @return tree (dendrogram) after hierarchical clustering
 #' @export
 #' @importFrom protoclust protoclust
 
-getHcluster <- function(allPairwise, pairColNums, distSimCol, linkage, dist = TRUE) {
-    distMat <- longToSquare(allPairwise, pairColNums, distSimCol, dist)
+getHcluster <- function(allPairwise, pairColNums, distSimCol, linkage, myDist = TRUE) {
+    distMat <- longToSquare(allPairwise, pairColNums, distSimCol, myDist)
     distObj <- as.dist(distMat)
 
     if (linkage != "minimax") {
@@ -42,21 +42,21 @@ getHcluster <- function(allPairwise, pairColNums, distSimCol, linkage, dist = TR
 #'   `allPairwise` of 1. item 1 in comparison, 2. item 2 in comparison
 #' @param distSimCol name of column in `allPairwise` indicating distances or
 #'   similarities, input as character, e.g. "l2dist". If this is a similarity
-#'   and not a difference, input `dist` parameter to be FALSE
-#' @param dist is `distSimCol` a distance or similarity measure? Default TRUE,
+#'   and not a difference, input `myDist` parameter to be FALSE
+#' @param myDist is `distSimCol` a distance or similarity measure? Default TRUE,
 #'   i.e. distance measure
 #'
 #' @return symmetric distance matrix
 #' @export
 
-longToSquare <- function(allPairwise, pairColNums, distSimCol, dist = TRUE) {
+longToSquare <- function(allPairwise, pairColNums, distSimCol, myDist = TRUE) {
   hashes <- unique(c(allPairwise[, pairColNums[1]], allPairwise[, pairColNums[2]]))
   hashes <- sort(hashes)
 
   distMat <- matrix(0, nrow = length(hashes), ncol = length(hashes))
   distMat[lower.tri(distMat)] <- 1 # don't actually need this
 
-  if (dist == FALSE) {
+  if (myDist == FALSE) {
     allPairwise[, distSimCol] <- 1 - allPairwise[, distSimCol]
   }
 

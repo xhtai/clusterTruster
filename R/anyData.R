@@ -44,11 +44,11 @@ genSimDiff <- function(datasetName, featureCols, allPairwise, pairColNums, measu
     corrs <- apply(cbind(info1, info2), MARGIN = 1, FUN = function(x) cor(as.numeric(x[1:ncol(info1)]), as.numeric(x[(ncol(info1) + 1):(2*ncol(info1))])))
     allPairwise$correlation <- corrs
   } else if (measure == "l2dist") {
-    myDist <- sqrt(rowSums((info1 - info2)^2))
-    allPairwise$l2dist <- myDist
+    tmpDist <- sqrt(rowSums((info1 - info2)^2))
+    allPairwise$l2dist <- tmpDist
   } else if (measure == "l1dist") {
-    myDist <- rowSums(abs(info1 - info2))
-    allPairwise$l1dist <- myDist
+    tmpDist <- rowSums(abs(info1 - info2))
+    allPairwise$l1dist <- tmpDist
   }
   return(allPairwise)
 }
@@ -74,10 +74,10 @@ genSimDiff <- function(datasetName, featureCols, allPairwise, pairColNums, measu
 #'   match/non-match status
 #' @param distSimCol name of column in `allPairwise` indicating distances or
 #'   similarities, input as character, e.g. "l2dist". If this is a similarity
-#'   and not a difference, input `dist` parameter to be FALSE. If a similarity
+#'   and not a difference, input `myDist` parameter to be FALSE. If a similarity
 #'   measure is used, distance will be calcualted as 1 - similarity.
 #' @param linkage one of "single", "complete", "average", "centroid", "minimax"
-#' @param dist is `distSimCol` a distance or similarity measure? Default TRUE,
+#' @param myDist is `distSimCol` a distance or similarity measure? Default TRUE,
 #'   i.e. distance measure
 #'
 #' @return outMetrics, a data frame with each row representing a clustering. For
@@ -85,10 +85,10 @@ genSimDiff <- function(datasetName, featureCols, allPairwise, pairColNums, measu
 #'   evaluation metrics, `maxMinimax`, `misClass`, `precision` and `recall`.
 #' @export
 
-getMetrics <- function(allPairwise, pairColNums, matchColNum, distSimCol, linkage, dist = TRUE) {
+getMetrics <- function(allPairwise, pairColNums, matchColNum, distSimCol, linkage, myDist = TRUE) {
 
       #### clustering
-      testThis <- getHcluster(allPairwise, pairColNums, distSimCol, linkage, dist)
+      testThis <- getHcluster(allPairwise, pairColNums, distSimCol, linkage, myDist)
       n <- length(unique(c(allPairwise[, pairColNums[1]], allPairwise[, pairColNums[2]])))
 
       for (i in 1:n) {
@@ -100,7 +100,7 @@ getMetrics <- function(allPairwise, pairColNums, matchColNum, distSimCol, linkag
 
       for (i in 1:nrow(outMetrics)) {
           if (i %% 10 == 0) cat(i, ", ")
-          out <- distToPrototype(allPairwise, distSimCol, sprintf("l%03d", i), pairColNums, dist)
+          out <- distToPrototype(allPairwise, distSimCol, sprintf("l%03d", i), pairColNums, myDist)
           outMetrics$maxMinimax[i] <- max(out$minimaxRadius)
           outMetrics$misClass[i] <- misclassRate(allPairwise, sprintf("l%03d", i), matchColNum)
           out <- precisionRecall(allPairwise, sprintf("l%03d", i), matchColNum)
