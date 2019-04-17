@@ -5,7 +5,7 @@
 \title{Generate distance matrix from pairwise list and distance (or similarity)
 column}
 \usage{
-longToSquare(allPairwise, pairColNums, distSimCol, dist = TRUE)
+longToSquare(allPairwise, pairColNums, distSimCol, myDist = TRUE)
 }
 \arguments{
 \item{allPairwise}{name of data frame containing all pairwise comparisons.
@@ -19,9 +19,9 @@ next two parameters.}
 
 \item{distSimCol}{name of column in `allPairwise` indicating distances or
 similarities, input as character, e.g. "l2dist". If this is a similarity
-and not a difference, input `dist` parameter to be FALSE}
+and not a difference, input `myDist` parameter to be FALSE}
 
-\item{dist}{is `distSimCol` a distance or similarity measure? Default TRUE,
+\item{myDist}{is `distSimCol` a distance or similarity measure? Default TRUE,
 i.e. distance measure}
 }
 \value{

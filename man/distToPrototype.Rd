@@ -5,7 +5,7 @@
 \title{Find prototypes given clustering, and radius (maximum distance to prototype)}
 \usage{
 distToPrototype(allPairwise, distSimCol, linkCol, pairColNums,
-  dist = TRUE)
+  myDist = TRUE)
 }
 \arguments{
 \item{allPairwise}{name of data frame containing all pairwise comparisons.
@@ -17,7 +17,7 @@ next three parameters.}
 
 \item{distSimCol}{name of column in `allPairwise` indicating distances or
 similarities, input as character, e.g. "l2dist". If this is a similarity
-and not a difference, input `dist` parameter to be FALSE. If a similarity
+and not a difference, input `myDist` parameter to be FALSE. If a similarity
 measure is used, distance will be calcualted as 1 - similarity.}
 
 \item{linkCol}{name of column in `allPairwise` with links, input as
@@ -26,7 +26,7 @@ character, e.g. "minimax0.4"}
 \item{pairColNums}{vector of length 2 indicating the column numbers in
 `allPairwise` of 1. item 1 in comparison, 2. item 2 in comparison}
 
-\item{dist}{is `distSimCol` a distance or similarity measure? Default TRUE,
+\item{myDist}{is `distSimCol` a distance or similarity measure? Default TRUE,
 i.e. distance measure}
 }
 \value{

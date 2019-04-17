@@ -4,7 +4,7 @@
 \alias{getHcluster}
 \title{Hierarchical clustering given pairwise distances}
 \usage{
-getHcluster(allPairwise, pairColNums, distSimCol, linkage, dist = TRUE)
+getHcluster(allPairwise, pairColNums, distSimCol, linkage, myDist = TRUE)
 }
 \arguments{
 \item{allPairwise}{name of data frame containing all pairwise comparisons.
@@ -18,11 +18,11 @@ next two parameters.}
 
 \item{distSimCol}{name of column in `allPairwise` indicating distances or
 similarities, input as character, e.g. "l2dist". If this is a similarity
-and not a difference, input `dist` parameter to be FALSE}
+and not a difference, input `myDist` parameter to be FALSE}
 
 \item{linkage}{one of "single", "complete", "average", "centroid", "minimax"}
 
-\item{dist}{is `distSimCol` a distance or similarity measure? Default TRUE,
+\item{myDist}{is `distSimCol` a distance or similarity measure? Default TRUE,
 i.e. distance measure}
 }
 \value{
