@@ -4,8 +4,14 @@
 \alias{getMetrics}
 \title{Generate four evaluation metrics from pairwise comparisons}
 \usage{
-getMetrics(allPairwise, pairColNums, matchColNum, distSimCol, linkage,
-  myDist = TRUE)
+getMetrics(
+  allPairwise,
+  pairColNums,
+  matchColNum,
+  distSimCol,
+  linkage,
+  myDist = TRUE
+)
 }
 \arguments{
 \item{allPairwise}{name of data frame containing all pairwise comparisons.

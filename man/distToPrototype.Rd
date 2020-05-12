@@ -4,8 +4,7 @@
 \alias{distToPrototype}
 \title{Find prototypes given clustering, and radius (maximum distance to prototype)}
 \usage{
-distToPrototype(allPairwise, distSimCol, linkCol, pairColNums,
-  myDist = TRUE)
+distToPrototype(allPairwise, distSimCol, linkCol, pairColNums, myDist = TRUE)
 }
 \arguments{
 \item{allPairwise}{name of data frame containing all pairwise comparisons.
