@@ -7,12 +7,12 @@
 plotResultsGG(
   datasetName,
   correlation = FALSE,
-  write_plot = TRUE,
+  write_plot = FALSE,
   plot_type = c("all", "minimax", "misclass", "pr")
 )
 }
 \arguments{
-\item{datasetName}{name of the orginal data set}
+\item{datasetName}{name of the orginal data set; to use this parameter you must have a folder called "outMetrics/", with files for each linkage method of the format: "datasetName_single.Rdata"}
 
 \item{correlation}{if TRUE, set y limits in max minimax graphic to be [0, 1]}
 
