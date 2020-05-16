@@ -1,0 +1,234 @@
+---
+title: "Reproducing Paper Results"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{reproducePaperResults}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(clusterTruster)
+```
+
+This vignette demonstrates how to reproduce the results in our paper, Benchmarking Minimax Linkage in Hierarchical Clustering (https://arxiv.org/abs/1906.03336), using the `clusterTruster` package. The following description is brief; for full details refer to the paper.
+
+## Data sets
+For the benchmark study, we use a total of 7 data sets. For the observations in each data set, we need to define a distance metric in order to run hierarchical clustering. The data sets and distance metrics used are shown below.
+
+| Data set | Distance metric |
+|:---------|:------|
+|  Olivetti faces  |   $\ell_2$ distance |
+|  Colon cancer |   Correlation  |
+|    Prostate cancer |   Correlation  |
+|    Iris |   $\ell_2$ distance  |
+|    NBIDE |   Maximum cross-correlation  |
+|    FBISW |   Maximum cross-correlation  |
+|    Simulations: |     |
+|    - Spherical |   $\ell_1, \ell_2$ distance   |
+|    - Elliptical |   $\ell_1, \ell_2$ distance   |
+|    - Outliers |   $\ell_1, \ell_2$ distance   |
+
+## Perform clustering and generate comparisons between different linkage methods
+
+The following is code used for each of the above data sets. The code shows the source of the data as well as how to generate comparison metrics.
+
+### Olivetti faces
+```{r, eval = FALSE}
+library(RnavGraphImageData)
+data("faces")
+
+# https://rdrr.io/github/jlmelville/snedata/src/R/olivetti.R
+olivetti_faces <- function() {
+  if (!requireNamespace("RnavGraphImageData", quietly = TRUE,
+                        warn.conflicts = FALSE)) {
+    stop("olivetti_faces function requires 'RnavGraphImageData' package")
+  }
+  faces <- NULL
+  utils::data("faces", envir = environment())
+  
+  df <- as.data.frame(t(faces))
+  npeople <- 40
+  nposes <- 10
+  colnames(df) <- sapply(seq(1, 4096), function(x) { paste0("px", x)})
+  rownames(df) <- apply(expand.grid(seq(1, nposes), seq(1, npeople)), 1,
+                        function(x) { paste(x[2], x[1], sep = "_") })
+  df$Label <-  factor(as.numeric(cut(1:nrow(df), npeople)))
+  
+  df
+}
+faces <- olivetti_faces()
+myPairwise <- genPairwise(datasetName = faces, labelColNum = 4097)
+myPairwise <- genSimDiff(datasetName = faces, featureCols = 1:4096, allPairwise = myPairwise, pairColNums = 1:2, measure = "l2dist") 
+
+linkages <- c("single", "complete", "average", "centroid", "minimax")
+for (l in 1:length(linkages)) {
+  outMetrics <- getMetrics(allPairwise = myPairwise, pairColNums = 1:2, matchColNum = 3, linkage = linkages[l], distSimCol = "l2dist", myDist = TRUE)
+  save(outMetrics, file = paste0("./outMetrics/faces", "_", linkages[l], ".Rdata"))
+}
+```
+
+
+### Colon cancer
+```{r, eval = FALSE}
+library(HiDimDA)
+data(AlonDS)
+
+myPairwise <- genPairwise(datasetName = AlonDS, labelColNum = 1)
+myPairwise <- genSimDiff(datasetName = AlonDS, featureCols = 2:2001, myPairwise, pairColNums = 1:2, "correlation")
+
+linkages <- c("single", "complete", "average", "centroid", "minimax")
+for (l in 1:length(linkages)) {
+  outMetrics <- getMetrics(allPairwise = myPairwise, pairColNums = 1:2, matchColNum = 3, linkage = linkages[l], distSimCol = "correlation", myDist = FALSE)
+  save(outMetrics, file = paste0("./outMetrics/AlonDS", "_", linkages[l], ".Rdata"))
+}
+```
+
+### Prostate cancer
+There are various possible sources of these data. The version that we use can be accessed from within the package using `data(singh2002)`. It is downloaded from https://stat.ethz.ch/~dettling/bagboost.html. Do not use the data from the `sda` package in R, as this is scaled differently.
+
+```{r, eval = FALSE}
+data(singh2002) # 102x6034
+
+myPairwise <- genPairwise(datasetName = singh2002, labelColNum = 6034)
+myPairwise <- genSimDiff(datasetName = singh2002, featureCols = 1:6033, myPairwise, pairColNums = 1:2, "correlation")
+
+linkages <- c("single", "complete", "average", "centroid", "minimax")
+for (l in 1:length(linkages)) {
+  outMetrics <- getMetrics(allPairwise = myPairwise, pairColNums = 1:2, matchColNum = 3, linkage = linkages[l], distSimCol = "correlation", myDist = FALSE)
+  save(outMetrics, file = paste0("./outMetrics/singh2002", "_", linkages[l], ".Rdata"))
+}
+```
+
+### Iris
+This is the famous `iris` data set that is included within R.
+
+```{r, eval = FALSE}
+data(iris)
+myPairwise <- genPairwise(datasetName = iris, labelColNum = 5)
+iris[, 1:4] <- scale(iris[, 1:4])
+myPairwise <- genSimDiff(datasetName = iris, featureCols = 1:4, allPairwise = myPairwise, pairColNums = 1:2, measure = "l2dist")
+
+linkages <- c("single", "complete", "average", "centroid", "minimax")
+for (l in 1:length(linkages)) {
+  outMetrics <- getMetrics(allPairwise = myPairwise, pairColNums = 1:2, matchColNum = 3, linkage = linkages[l], distSimCol = "l2dist", myDist = TRUE)
+  save(outMetrics, file = paste0("./outMetrics/iris", "_", linkages[l], ".Rdata"))
+}
+```
+
+
+### NBIDE
+This data set is of 144 images of cartridge cases, taken from NIST's [Ballistics Toolmarks Research Database](https://tsapps.nist.gov/NRBTD). There are 12 images each taken from 12 different guns, from the NBIDE study. Pairwise comparisons have been pre-computed using the [`cartridges3D` package](https://github.com/xhtai/cartridges3D), and stored in `removedDups`.
+
+In this case, we do not need to use the functions `genPairwise()` or `genSimDiff()`, and can simply input the appropriate data and column information into `getMetrics`, as follows.
+
+```{r, eval = FALSE}
+linkages <- c("single", "complete", "average", "centroid", "minimax")
+for (l in 1:length(linkages)) {
+  outMetrics <- getMetrics(allPairwise = removedDups, pairColNums = 1:2, matchColNum = "match", distSimCol = "corrMax", linkage = linkages[l], myDist = FALSE)
+  save(outMetrics, file = paste0("./outMetrics/NBIDE", "_", linkages[l], ".Rdata"))
+}
+```
+
+### FBISW
+Similarly to NBIDE, data from FBISW have been precomputed, and are stored in `FBISW`.
+
+```{r, eval = FALSE}
+linkages <- c("single", "complete", "average", "centroid", "minimax")
+for (l in 1:length(linkages)) {
+  outMetrics <- getMetrics(allPairwise = FBISW, pairColNums = 1:2, matchColNum = "match", distSimCol = "corrMax", linkage = linkages[l], myDist = FALSE)
+  save(outMetrics, file = paste0("./outMetrics/FBISW", "_", linkages[l], ".Rdata"))
+}
+```
+
+### Simulations
+```{r, eval = FALSE}
+### 1. spherical
+set.seed(7)
+c1 <- MASS::mvrnorm(n = 100, rep(0, 10), Sigma = diag(10))
+c2 <- MASS::mvrnorm(n = 100, c(2, 2, rep(0, 8)), Sigma = diag(10))
+c3 <- MASS::mvrnorm(n = 100, c(0, 2, 2, rep(0, 7)), Sigma = diag(10))
+spherical <- data.frame(clust = rep(1:3, each = 100), rbind(c1, c2, c3))
+
+myPairwise <- genPairwise(datasetName = spherical, labelColNum = 1)
+myPairwise <- genSimDiff(datasetName = spherical, featureCols = 2:11, allPairwise = myPairwise, pairColNums = 1:2, measure = "l2dist")
+myPairwise <- genSimDiff(datasetName = spherical, featureCols = 2:11, allPairwise = myPairwise, pairColNums = 1:2, measure = "l1dist")
+
+linkages <- c("single", "complete", "average", "centroid", "minimax")
+for (l in 1:length(linkages)) {
+  outMetrics <- getMetrics(allPairwise = myPairwise, pairColNums = 1:2, matchColNum = 3, linkage = linkages[l], distSimCol = "l2dist", myDist = TRUE)
+  save(outMetrics, file = paste0("./outMetrics/sphericall2", "_", linkages[l], ".Rdata"))
+  
+  outMetrics <- getMetrics(allPairwise = myPairwise, pairColNums = 1:2, matchColNum = 3, linkage = linkages[l], distSimCol = "l1dist", myDist = TRUE)
+  save(outMetrics, file = paste0("./outMetrics/sphericall1", "_", linkages[l], ".Rdata"))
+}
+
+### 2. elliptical
+set.seed(7)
+c1 <- MASS::mvrnorm(n = 100, rep(0, 10), Sigma = diag(x = c(1, 1, 1, 2, 2, 1, 1, 1, 1, 1)))
+c2 <- MASS::mvrnorm(n = 100, c(2, 2, rep(0, 8)), Sigma = diag(x = c(1, 1, 1, 2, 2, 1, 1, 1, 1, 1)))
+c3 <- MASS::mvrnorm(n = 100, c(0, 2, 2, rep(0, 7)), Sigma = diag(x = c(1, 1, 1, 2, 2, 1, 1, 1, 1, 1)))
+elliptical <- data.frame(clust = rep(1:3, each = 100), rbind(c1, c2, c3))
+
+myPairwise <- genPairwise(datasetName = elliptical, labelColNum = 1)
+myPairwise <- genSimDiff(datasetName = elliptical, featureCols = 2:11, allPairwise = myPairwise, pairColNums = 1:2, measure = "l2dist")
+myPairwise <- genSimDiff(datasetName = elliptical, featureCols = 2:11, allPairwise = myPairwise, pairColNums = 1:2, measure = "l1dist")
+
+linkages <- c("single", "complete", "average", "centroid", "minimax")
+for (l in 1:length(linkages)) {
+  outMetrics <- getMetrics(allPairwise = myPairwise, pairColNums = 1:2, matchColNum = 3, linkage = linkages[l], distSimCol = "l2dist", myDist = TRUE)
+  save(outMetrics, file = paste0("./outMetrics/ellipticall2", "_", linkages[l], ".Rdata"))
+  
+  outMetrics <- getMetrics(allPairwise = myPairwise, pairColNums = 1:2, matchColNum = 3, linkage = linkages[l], distSimCol = "l1dist", myDist = TRUE)
+  save(outMetrics, file = paste0("./outMetrics/ellipticall1", "_", linkages[l], ".Rdata"))
+}
+
+
+### 3. outliers
+set.seed(7)
+c1 <- MASS::mvrnorm(n = 100, rep(0, 10), Sigma = diag(10))
+c2 <- MASS::mvrnorm(n = 98, c(2, 2, rep(0, 8)), Sigma = diag(10))
+c2out <- MASS::mvrnorm(n = 2, c(5, 5, rep(0, 8)), Sigma = diag(10))
+c3 <- MASS::mvrnorm(n = 98, c(0, 2, 2, rep(0, 7)), Sigma = diag(10))
+c3out <- MASS::mvrnorm(n = 2, c(0, 5, 5, rep(0, 7)), Sigma = diag(10))
+outliers <- data.frame(clust = rep(1:3, each = 100), rbind(c1, c2, c2out, c3, c3out))
+
+myPairwise <- genPairwise(datasetName = outliers, labelColNum = 1)
+myPairwise <- genSimDiff(datasetName = outliers, featureCols = 2:11, allPairwise = myPairwise, pairColNums = 1:2, measure = "l2dist")
+myPairwise <- genSimDiff(datasetName = outliers, featureCols = 2:11, allPairwise = myPairwise, pairColNums = 1:2, measure = "l1dist")
+
+linkages <- c("single", "complete", "average", "centroid", "minimax")
+for (l in 1:length(linkages)) {
+  outMetrics <- getMetrics(allPairwise = myPairwise, pairColNums = 1:2, matchColNum = 3, linkage = linkages[l], distSimCol = "l2dist", myDist = TRUE)
+  save(outMetrics, file = paste0("./outMetrics/outliersl2", "_", linkages[l], ".Rdata"))
+  
+  outMetrics <- getMetrics(allPairwise = myPairwise, pairColNums = 1:2, matchColNum = 3, linkage = linkages[l], distSimCol = "l1dist", myDist = TRUE)
+  save(outMetrics, file = paste0("./outMetrics/outliersl1", "_", linkages[l], ".Rdata"))
+}
+```
+
+
+
+## Plots
+This is some example code for generating plots, assuming that metrics have been generated using each linkage method and stored in a Rdata files with their corresponding names, as demonstrated above. Assuming we have a folder called `outMetrics/` with the following contents: `faces_average.Rdata`, `faces_centroid.Rdata`, `faces_complete.Rdata`, `faces_minimax.Rdata`, `faces_single.Rdata`, we can run the following code.
+
+
+```{r, eval = FALSE}
+plotResultsGG("faces", plot_type = "minimax")
+plotResultsGG("faces", plot_type = "misclass")
+plotResultsGG("faces", plot_type = "pr")
+plotResultsGG("faces", write_plot = FALSE, plot_type = "all")
+```
+
+For the NBIDE data set, we can run the following code, if we have `outMetrics/` with the following contents: `NBIDE_average.Rdata`, `NBIDE_centroid.Rdata`, `NBIDE_complete.Rdata`, `NBIDE_minimax.Rdata`, `NBIDE_single.Rdata`.
+
+```{r, eval = FALSE}
+plotResultsGG("NBIDE", correlation = TRUE, write_plot = FALSE, plot_type = "all")
+```
