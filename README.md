@@ -11,11 +11,22 @@ package are Xiao Hui Tai (<https://xhtai.github.io/>) and Kayla Frisoli
 
 ## Installation
 
-You can install `clusterTruster` from github with:
+You can install `clusterTruster` from GitHub with:
 
 ``` r
-devtools::install_github("xhtai/clusterTruster")
+devtools::install_github("xhtai/clusterTruster", build_vignettes = TRUE)
 library(clusterTruster)
+```
+
+## Reproducing paper results
+
+The package contains a vignette with code to reproduce the results in
+our paper. To view the vignette, you would have had to install the
+package with the option `build_vignettes = TRUE`. You can then view the
+vignette using
+
+``` r
+vignette("reproducePaperResults", package = "clusterTruster")
 ```
 
 ## Examples
@@ -35,6 +46,8 @@ myPairwise <-
   clusterTruster::genSimDiff(iris, 1:4, myPairwise, 1:2, "l2dist")
 ```
 
+Note that the following code could take a while to run.
+
 ``` r
 outMetrics_iris_single <- clusterTruster::getMetrics(
   myPairwise,
@@ -43,7 +56,6 @@ outMetrics_iris_single <- clusterTruster::getMetrics(
   distSimCol = "l2dist",
   linkage = "single"
 )
-#> 10 , 20 , 30 , 40 , 50 , 60 , 70 , 80 , 90 , 100 , 110 , 120 , 130 , 140 , 150 ,
 outMetrics_iris_complete <- clusterTruster::getMetrics(
   myPairwise,
   pairColNums = 1:2,
@@ -51,7 +63,6 @@ outMetrics_iris_complete <- clusterTruster::getMetrics(
   distSimCol = "l2dist",
   linkage = "complete"
 )
-#> 10 , 20 , 30 , 40 , 50 , 60 , 70 , 80 , 90 , 100 , 110 , 120 , 130 , 140 , 150 ,
 outMetrics_iris_average <- clusterTruster::getMetrics(
   myPairwise,
   pairColNums = 1:2,
@@ -59,7 +70,6 @@ outMetrics_iris_average <- clusterTruster::getMetrics(
   distSimCol = "l2dist",
   linkage = "average"
 )
-#> 10 , 20 , 30 , 40 , 50 , 60 , 70 , 80 , 90 , 100 , 110 , 120 , 130 , 140 , 150 ,
 outMetrics_iris_centroid <- clusterTruster::getMetrics(
   myPairwise,
   pairColNums = 1:2,
@@ -67,7 +77,6 @@ outMetrics_iris_centroid <- clusterTruster::getMetrics(
   distSimCol = "l2dist",
   linkage = "centroid"
 )
-#> 10 , 20 , 30 , 40 , 50 , 60 , 70 , 80 , 90 , 100 , 110 , 120 , 130 , 140 , 150 ,
 outMetrics_iris_minimax <- clusterTruster::getMetrics(
   myPairwise,
   pairColNums = 1:2,
@@ -75,7 +84,6 @@ outMetrics_iris_minimax <- clusterTruster::getMetrics(
   distSimCol = "l2dist",
   linkage = "minimax"
 )
-#> 10 , 20 , 30 , 40 , 50 , 60 , 70 , 80 , 90 , 100 , 110 , 120 , 130 , 140 , 150 ,
 ```
 
 #### Plotting linkage method results for iris
@@ -93,7 +101,7 @@ clusterTruster::plotResultsGG_base(
 )
 ```
 
-<img src="README-unnamed-chunk-4-1.png" style="display: block; margin: auto;" />
+![](README-unnamed-chunk-5-1.png)
 
 To compare all:
 
@@ -110,17 +118,7 @@ clusterTruster::plotResultsGG_base(
 )
 ```
 
-<img src="README-unnamed-chunk-5-1.png" style="display: block; margin: auto;" />
-
-## Reproducing Paper Results
-
-To reproduce the results in our paper, Benchmarking Minimax Linkage in
-Hierarchical Clustering (<https://arxiv.org/abs/1906.03336>), refer to
-the package vignette. You can view the vignette using
-
-``` r
-vignette("reproducePaperResults", package = "clusterTruster")
-```
+![](README-unnamed-chunk-6-1.png)
 
 ## License
 

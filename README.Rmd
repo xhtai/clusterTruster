@@ -26,12 +26,20 @@ This is a package to benchmark linkages in hierarchical clustering. Please see o
 
 ## Installation
 
-You can install `clusterTruster` from github with:
+You can install `clusterTruster` from GitHub with:
 
 ```{r gh-installation, eval = FALSE}
-devtools::install_github("xhtai/clusterTruster")
+devtools::install_github("xhtai/clusterTruster", build_vignettes = TRUE)
 library(clusterTruster)
 ```
+
+## Reproducing paper results
+The package contains a vignette with code to reproduce the results in our paper. To view the vignette, you would have had to install the package with the option `build_vignettes = TRUE`. You can then view the vignette using 
+
+```{r, eval = FALSE}
+vignette("reproducePaperResults", package = "clusterTruster")
+```
+
 
 ## Examples
 
@@ -39,7 +47,7 @@ library(clusterTruster)
 
 We can analyze the iris data set as follows. We first center and scale the four features, "Sepal.Length", "Sepal.Width", "Petal.Length", "Petal.Width", and generate the l2 distance between all pairs. We then use various linkage methods to generate all associated evaluation metrics.
 
-```{r, eval = TRUE}
+```{r, eval = FALSE}
 myPairwise <- clusterTruster::genPairwise(iris, 5)
 iris[, 1:4] <- scale(iris[, 1:4])
 myPairwise <-
@@ -47,7 +55,9 @@ myPairwise <-
 ```
 
 
-```{r, eval = TRUE, cache=TRUE}
+Note that the following code could take a while to run.
+
+```{r, eval = FALSE, cache=TRUE}
 outMetrics_iris_single <- clusterTruster::getMetrics(
   myPairwise,
   pairColNums = 1:2,
@@ -89,7 +99,7 @@ outMetrics_iris_minimax <- clusterTruster::getMetrics(
 
 To compare single, complete, and average:
 
-```{r, fig.height=3.5, fig.width=10, fig.align='center'}
+```{r, fig.height=3.5, fig.width=10, fig.align='center', eval = FALSE}
 clusterTruster::plotResultsGG_base(
   single = outMetrics_iris_single,
   complete = outMetrics_iris_complete,
@@ -99,10 +109,11 @@ clusterTruster::plotResultsGG_base(
   plot_type = c("all", "minimax", "misclass", "pr")
 )
 ```
+![](README-unnamed-chunk-5-1.png)
 
 To compare all:
 
-```{r, fig.height=3.5, fig.width=10, fig.align='center'}
+```{r, fig.height=3.5, fig.width=10, fig.align='center', eval = FALSE}
 clusterTruster::plotResultsGG_base(
   single = outMetrics_iris_single,
   complete = outMetrics_iris_complete,
@@ -114,14 +125,8 @@ clusterTruster::plotResultsGG_base(
   plot_type = c("all", "minimax", "misclass", "pr")
 )
 ```
+![](README-unnamed-chunk-6-1.png)
 
-
-## Reproducing Paper Results 
-To reproduce the results in our paper, Benchmarking Minimax Linkage in Hierarchical Clustering (https://arxiv.org/abs/1906.03336), refer to the package vignette. You can view the vignette using 
-
-```{r, eval = FALSE}
-vignette("reproducePaperResults", package = "clusterTruster")
-```
 
 ## License
 The `clusterTruster` package is licensed under GPLv3 (http://www.gnu.org/licenses/gpl.html).
