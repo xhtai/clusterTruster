@@ -117,7 +117,11 @@ clusterTruster::plotResultsGG_base(
 
 
 ## Reproducing Paper Results 
-To reproduce the results in our paper, Benchmarking Minimax Linkage in Hierarchical Clustering (https://arxiv.org/abs/1906.03336), refer to this vignette.
+To reproduce the results in our paper, Benchmarking Minimax Linkage in Hierarchical Clustering (https://arxiv.org/abs/1906.03336), refer to the package vignette. You can view the vignette using 
+
+```{r, eval = FALSE}
+vignette("reproducePaperResults", package = "clusterTruster")
+```
 
 ## License
 The `clusterTruster` package is licensed under GPLv3 (http://www.gnu.org/licenses/gpl.html).

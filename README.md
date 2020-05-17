@@ -112,51 +112,14 @@ clusterTruster::plotResultsGG_base(
 
 <img src="README-unnamed-chunk-5-1.png" style="display: block; margin: auto;" />
 
-# Reproducing Paper Results
+## Reproducing Paper Results
 
-### NBIDE
-
-The package also contains an example data set, called `removedDups`.
-This analyzes 144 images of cartridge cases, taken from NIST’s
-[Ballistics Toolmarks Research Database](https://tsapps.nist.gov/NRBTD).
-There are 12 images each taken from 12 different guns, from the NBIDE
-study. Pairwise comparisons have been pre-computed using the
-[`cartridges3D` package](https://github.com/xhtai/cartridges3D), and
-stored in `removedDups`. In this case, we do not need to use the
-functions `genPairwise()` or `genSimDiff()`, and can simply input the
-appropriate data and column information into `getMetrics`, as follows.
+To reproduce the results in our paper, Benchmarking Minimax Linkage in
+Hierarchical Clustering (<https://arxiv.org/abs/1906.03336>), refer to
+the package vignette. You can view the vignette using
 
 ``` r
-NBIDEminimax <- getMetrics(removedDups, pairColNums = 1:2, 
-                           matchColNum = "match", distSimCol = "corrMax",
-                           linkage = "minimax", myDist = FALSE) 
-```
-
-## Creating outMetrics/ folder
-
-## Plots
-
-This is some example code for generating plots, assuming that metrics
-have been generated using each linkage method and stored in a Rdata
-files with their corresponding names. I have a folder called
-`outMetrics/` with the following contents: `faces_average.Rdata`,
-`faces_centroid.Rdata`, `faces_complete.Rdata`, `faces_minimax.Rdata`,
-`faces_single.Rdata`
-
-``` r
-plotResultsGG("faces", plot_type = "minimax")
-plotResultsGG("faces", plot_type = "misclass")
-plotResultsGG("faces", plot_type = "pr")
-plotResultsGG("faces", write_plot = FALSE, plot_type = "all")
-```
-
-For the following, I would need to have `outMetrics/` with the following
-contents: `NBIDE_average.Rdata`, `NBIDE_centroid.Rdata`,
-`NBIDE_complete.Rdata`, `NBIDE_minimax.Rdata`,
-`NBIDE_single.Rdata`
-
-``` r
-plotResultsGG("NBIDE", correlation = TRUE, write_plot = FALSE, plot_type = "all")
+vignette("reproducePaperResults", package = "clusterTruster")
 ```
 
 ## License

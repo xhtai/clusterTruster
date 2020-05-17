@@ -1,13 +1,13 @@
 Package: clusterTruster
-Title: Benchmarks Minimax Linkage
+Title: Benchmarking Minimax Linkage
 Version: 0.0.0.9000
 Authors@R: 
     person(given = "Xiao Hui",
            family = "Tai",
            role = c("aut", "cre"),
-           email = "xtai@andrew.cmu.edu")
+           email = "xtai@berkeley.edu")
 Description: What the package does (one paragraph).
-URL: https://github.com/xhtai/heisenbrgr
+URL: https://github.com/xhtai/clusterTruster
 Depends:
     R (>= 3.0)
 Imports:
